@@ -6,8 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -43,6 +45,19 @@ public class User {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Topic> topics = new ArrayList<>();
 
+    // Users that this user follows (owning side)
+    @ManyToMany
+    @JoinTable(
+            name = "user_follows",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
+    )
+    private Set<User> following = new HashSet<>();
+
+    // Users that follow this user (inverse side)
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -67,5 +82,18 @@ public class User {
 
     @PreUpdate
     public void onUpdate() {
+    }
+
+    // Helper methods
+    public void follow(User toFollow) {
+        if (toFollow == null || this.equals(toFollow)) return;
+        this.getFollowing().add(toFollow);
+        toFollow.getFollowers().add(this);
+    }
+
+    public void unfollow(User toUnfollow) {
+        if (toUnfollow == null || this.equals(toUnfollow)) return;
+        this.getFollowing().remove(toUnfollow);
+        toUnfollow.getFollowers().remove(this);
     }
 }

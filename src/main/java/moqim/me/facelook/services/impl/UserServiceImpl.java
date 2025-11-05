@@ -6,8 +6,10 @@ import moqim.me.facelook.domain.entities.User;
 import moqim.me.facelook.repository.UserRepository;
 import moqim.me.facelook.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -39,10 +41,9 @@ public class UserServiceImpl implements UserService {
     public User updateUser(long id, User user) {
         User existingUser = this.getUserById(id);
         if(existingUser == null) {throw new EntityNotFoundException("User with id " + id + " not found");}
-        User newUser = new User();
-        newUser.setName(user.getName());
-        newUser.setBio(user.getBio());
-        return userRepository.save(newUser);
+        existingUser.setName(user.getName());
+        existingUser.setBio(user.getBio());
+        return userRepository.save(existingUser);
     }
 
     @Override
@@ -52,5 +53,50 @@ public class UserServiceImpl implements UserService {
             userRepository.delete(user);
         }
 
+    }
+
+    // Follow feature implementations
+    @Override
+    @Transactional
+    public void follow(long followerId, long followingId) {
+        if (followerId == followingId) return;
+        User follower = getUserById(followerId);
+        User following = getUserById(followingId);
+        follower.follow(following);
+        userRepository.save(follower); // owning side persists
+    }
+
+    @Override
+    @Transactional
+    public void unfollow(long followerId, long followingId) {
+        if (followerId == followingId) return;
+        User follower = getUserById(followerId);
+        User following = getUserById(followingId);
+        follower.unfollow(following);
+        userRepository.save(follower);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getFollowers(long userId) {
+        User user = getUserById(userId);
+        return user.getFollowers().stream().toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getFollowing(long userId) {
+        User user = getUserById(userId);
+        return user.getFollowing().stream().toList();
+    }
+
+    @Override
+    public Long getFollowersCount(long userId) {
+        return (long) getUserById(userId).getFollowers().size();
+    }
+
+    @Override
+    public Long getFollowingCount(long userId) {
+        return (long) getUserById(userId).getFollowing().size();
     }
 }
