@@ -36,7 +36,7 @@ public class PostController {
     }
 
 
-    @PostMapping(path = "/new")
+    @PostMapping(path = "/create")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody CreatePostRequestDto createPostRequestDto){
         CreatePostRequest createPostRequest = postMapper.toCreatePostRequest(createPostRequestDto);
         Post createdPost = postService.createPost(createPostRequest);
