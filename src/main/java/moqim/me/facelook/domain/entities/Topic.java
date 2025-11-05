@@ -1,36 +1,27 @@
 package moqim.me.facelook.domain.entities;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "topics")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Post {
-
-
+public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String title;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic_id", nullable = false)
-    private Topic topic;
+    @Column(nullable = false, unique = true)
+    private String name;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -38,20 +29,27 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Integer postCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
+
+
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Post> posts = new ArrayList<>();
+
+
 
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return id == post.id && Objects.equals(title, post.title) && Objects.equals(author, post.author) && Objects.equals(topic, post.topic) && Objects.equals(createdAt, post.createdAt) && Objects.equals(updatedAt, post.updatedAt) && Objects.equals(postCount, post.postCount);
+        Topic topic = (Topic) o;
+        return Objects.equals(id, topic.id) && Objects.equals(name, topic.name) && Objects.equals(createdAt, topic.createdAt) && Objects.equals(updatedAt, topic.updatedAt) && Objects.equals(creator, topic.creator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, author, topic, createdAt, updatedAt, postCount);
+        return Objects.hash(id, name, createdAt, updatedAt, creator);
     }
 
     @PrePersist

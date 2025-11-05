@@ -2,10 +2,12 @@ package moqim.me.facelook.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import moqim.me.facelook.domain.entities.Post;
+import moqim.me.facelook.domain.entities.Topic;
 import moqim.me.facelook.domain.entities.User;
 import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
 import moqim.me.facelook.repository.PostRepository;
+import moqim.me.facelook.repository.TopicRepository;
 import moqim.me.facelook.repository.UserRepository;
 import moqim.me.facelook.services.PostService;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
@@ -19,6 +21,7 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final TopicRepository topicRepository;
 
 
     @Override
@@ -67,6 +70,24 @@ public class PostServiceImpl implements PostService {
     public void deletePost(long id) {
         Post post = getPostById(id);
         postRepository.delete(post);
+    }
+
+    @Override
+    public List<Post> listPostsByTopicId(long topicId) {
+        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new IllegalArgumentException("Topic with id " + topicId + " not found!"));
+        return topic.getPosts();
+    }
+
+    @Override
+    public List<Post> listPostsByCreatorId(long creatorId) {
+        User user = userRepository.findById(creatorId).orElseThrow(() -> new IllegalArgumentException("User with id " + creatorId + " not found!"));
+        return postRepository.findByAuthor(user);
+    }
+
+    @Override
+    public Post postByTopicId(long topicId) {
+        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new IllegalArgumentException("Topic with id " + topicId + " not found!"));
+        return topic.getPosts().stream().findFirst().orElse(null);
     }
 
 }

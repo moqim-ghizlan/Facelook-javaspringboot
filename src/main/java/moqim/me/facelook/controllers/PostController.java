@@ -38,7 +38,7 @@ public class PostController {
     }
 
 
-    @PostMapping(path = "/create")
+        @PostMapping(path = "/create")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody CreatePostRequestDto createPostRequestDto, @AuthenticationPrincipal FBUserDetails user){
         if (user == null) {
             return ResponseEntity.status(401).build();

@@ -44,7 +44,6 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e){
-            // Do not throw exception, just don't auth the user
             log.warn("Received invalid token");
         }
 

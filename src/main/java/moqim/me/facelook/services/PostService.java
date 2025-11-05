@@ -9,13 +9,12 @@ import java.util.List;
 public interface PostService {
 
     Post getPostById(long id);
-
     List<Post> getAllPosts();
-
     Post createPost(CreatePostRequest createPostRequest, long userId);
-
     Post updatePost(UpdatePostRequest updatePostRequest, long postId);
     Post updatePost(UpdatePostRequest updatePostRequest, long postId, long userId);
-
     void deletePost(long id);
+    List<Post> listPostsByTopicId(long topicId);
+    List<Post> listPostsByCreatorId(long creatorId);
+    Post postByTopicId(long topicId);
 }
