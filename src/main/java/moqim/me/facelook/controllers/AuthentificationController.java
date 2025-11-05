@@ -8,10 +8,9 @@ import moqim.me.facelook.domain.requests.LoginRequest;
 import moqim.me.facelook.services.AuthentificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/auth")
@@ -44,4 +43,10 @@ public class AuthentificationController {
     }
 
 
+    @GetMapping(path = "/logout")
+    public ResponseEntity<Map<String, String>> logout() {
+        return ResponseEntity.ok(Map.of(
+                "message", "Logged out successfully. Remove the JWT on the client side."
+        ));
+    }
 }
