@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import moqim.me.facelook.services.AuthentificationService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthentificationFilter extends OncePerRequestFilter {
+
     private final AuthentificationService authentificationService;
 
     @Override
@@ -26,7 +28,7 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
         try{
             String token = extractToken(request);
             if (null != token) {
-                org.springframework.security.core.userdetails.UserDetails userDetails = authentificationService.validateToken(token);
+                UserDetails userDetails = authentificationService.validateToken(token);
                 UsernamePasswordAuthenticationToken authentication  =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -49,7 +51,6 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
-
     private String extractToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

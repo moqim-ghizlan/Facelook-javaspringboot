@@ -8,5 +8,6 @@ public interface AuthentificationService {
     UserDetails authenticate(String email, String password);
     String generateToken(UserDetails userDetails);
     UserDetails validateToken(String token);
+    UserDetails register(RegisterRequest registerRequest);
 
 }

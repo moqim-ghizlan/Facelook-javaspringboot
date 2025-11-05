@@ -24,6 +24,9 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String email;
 
@@ -45,12 +48,17 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password, bio, createdAt);
+        return Objects.hash(id, name, username, email, password, bio, createdAt);
     }
+
+
 
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    public void onUpdate() {
+    }
 }
