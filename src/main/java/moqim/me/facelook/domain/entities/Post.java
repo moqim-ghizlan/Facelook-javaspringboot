@@ -24,6 +24,10 @@ public class Post {
     @Column(unique = true, nullable = false)
     private String title;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -39,9 +43,8 @@ public class Post {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, createdAt, updatedAt);
+        return Objects.hash(id, title, author, createdAt, updatedAt);
     }
-
 
     @PrePersist
     public void onCreate() {

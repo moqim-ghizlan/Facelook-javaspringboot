@@ -11,8 +11,10 @@ import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
 import moqim.me.facelook.mappers.PostMapper;
 import moqim.me.facelook.services.PostService;
+import moqim.me.facelook.security.FBUserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 
 @RestController
@@ -37,18 +39,28 @@ public class PostController {
 
 
     @PostMapping(path = "/create")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody CreatePostRequestDto createPostRequestDto){
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody CreatePostRequestDto createPostRequestDto, @AuthenticationPrincipal FBUserDetails user){
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
         CreatePostRequest createPostRequest = postMapper.toCreatePostRequest(createPostRequestDto);
-        Post createdPost = postService.createPost(createPostRequest);
+        Post createdPost = postService.createPost(createPostRequest, user.getId());
         PostDto postDto = postMapper.toDto(createdPost);
         return ResponseEntity.ok(postDto);
     }
 
 
     @PutMapping(path = "/one/{id}/update")
-    public ResponseEntity<PostDto> updatePost(@PathVariable long id, @Valid @RequestBody UpdatePostRequestDto updatePostRequestDto) {
+    public ResponseEntity<PostDto> updatePost(
+            @PathVariable long id,
+            @Valid @RequestBody UpdatePostRequestDto updatePostRequestDto,
+            @AuthenticationPrincipal FBUserDetails user
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
         UpdatePostRequest updatePostRequest1 = postMapper.updatePostRequest(updatePostRequestDto);
-        Post updatedPost = postService.updatePost(updatePostRequest1, id);
+        Post updatedPost = postService.updatePost(updatePostRequest1, id, user.getId());
         PostDto postDto = postMapper.toDto(updatedPost);
         return ResponseEntity.ok(postDto);
     }

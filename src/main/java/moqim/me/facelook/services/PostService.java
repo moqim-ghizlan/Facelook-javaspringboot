@@ -12,9 +12,10 @@ public interface PostService {
 
     List<Post> getAllPosts();
 
-    Post createPost(CreatePostRequest createPostRequest);
+    Post createPost(CreatePostRequest createPostRequest, long userId);
 
     Post updatePost(UpdatePostRequest updatePostRequest, long postId);
+    Post updatePost(UpdatePostRequest updatePostRequest, long postId, long userId);
 
     void deletePost(long id);
 }

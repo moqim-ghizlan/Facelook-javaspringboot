@@ -1,22 +1,14 @@
 package moqim.me.facelook.domain.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostDto {
+public class AuthorDto {
     private long id;
-    private String title;
-    private AuthorDto author;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
 }
