@@ -33,6 +33,13 @@ public class PostController {
         return ResponseEntity.ok(allPosts);
     }
 
+    @GetMapping(path = "/feed")
+    public ResponseEntity<List<PostDto>> getFeed(@AuthenticationPrincipal FBUserDetails user) {
+        Long userId = (user == null) ? null : user.getId();
+        List<PostDto> feed = postService.getFeed(userId).stream().map(postMapper::toDto).toList();
+        return ResponseEntity.ok(feed);
+    }
+
     @GetMapping(path = "/one/{id}")
     public ResponseEntity<PostDto> getPost(@PathVariable long id){
         PostDto postDtp = postMapper.toDto(postService.getPostById(id));
@@ -151,7 +158,7 @@ public class PostController {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
-        var comment = postService.likeComment(commentId, user.getId());
+        Comment comment = postService.likeComment(commentId, user.getId());
         return ResponseEntity.ok(commentMapper.toDto(comment));
     }
 
@@ -163,7 +170,7 @@ public class PostController {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
-        var comment = postService.unlikeComment(commentId, user.getId());
+        Comment comment = postService.unlikeComment(commentId, user.getId());
         return ResponseEntity.ok(commentMapper.toDto(comment));
     }
 

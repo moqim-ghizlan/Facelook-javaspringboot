@@ -6,6 +6,7 @@ import moqim.me.facelook.domain.dtos.CreateTopicRequestDto;
 import moqim.me.facelook.domain.dtos.TopicDto;
 import moqim.me.facelook.domain.dtos.UpdateTopicRequestDto;
 import moqim.me.facelook.domain.entities.Topic;
+import moqim.me.facelook.domain.entities.User;
 import moqim.me.facelook.domain.requests.CreateTopicRequest;
 import moqim.me.facelook.domain.requests.UpdateTopicRequest;
 import moqim.me.facelook.mappers.TopicMapper;
@@ -48,7 +49,7 @@ public class TopicController {
         Topic topic = Topic.builder()
                 .name(req.getTitle())
                 .build();
-        var creator = new moqim.me.facelook.domain.entities.User();
+        User creator = new User();
         creator.setId(user.getId());
         topic.setCreator(creator);
 

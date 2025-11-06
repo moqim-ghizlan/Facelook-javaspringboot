@@ -17,6 +17,7 @@ import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 import moqim.me.facelook.domain.entities.Emotion;
 import moqim.me.facelook.domain.entities.Comment;
@@ -92,7 +93,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> listPostsByCreatorId(long creatorId) {
-        User user = userRepository.findById(creatorId).orElseThrow(() -> new IllegalArgumentException("User with id " + creatorId + " not found!"));
+        User user = userRepository.findById(creatorId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + creatorId + " not found!"));
         return postRepository.findByAuthor(user);
     }
 
@@ -103,12 +105,38 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> getFeed(Long userId) {
+        if (userId == null) {
+            return postRepository.findAllByOrderByCreatedAtDesc();
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found!"));
+
+        Set<User> following = user.getFollowing();
+        List<Post> followedPosts = (following == null || following.isEmpty())
+                ? List.of()
+                : postRepository.findAllByAuthorInOrderByCreatedAtDesc(following.stream().toList());
+
+        List<Post> allPosts = postRepository.findAllByOrderByCreatedAtDesc();
+
+        // Merge: keep followed posts first, then the rest without duplicates
+        java.util.LinkedHashSet<Long> seen = new java.util.LinkedHashSet<>();
+        java.util.ArrayList<Post> result = new java.util.ArrayList<>();
+        for (Post p : followedPosts) {
+            if (seen.add(p.getId())) result.add(p);
+        }
+        for (Post p : allPosts) {
+            if (seen.add(p.getId())) result.add(p);
+        }
+        return result;
+    }
+
+    @Override
     public Post likePost(long postId, long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found!"));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found!"));
-
         Emotion emotion = emotionRepository.findByPostAndUser(post, user).orElse(null);
         if (emotion == null) {
             emotion = Emotion.builder().post(post).user(user).status(EmotionStatus.LIKE).build();
