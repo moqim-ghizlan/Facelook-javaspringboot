@@ -188,4 +188,25 @@ public class PostServiceImpl implements PostService {
         }
         commentRepository.delete(comment);
     }
+
+    @Override
+    public Comment likeComment(long commentId, long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found!"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found!"));
+        // Set ensures only one like per user
+        comment.getLikes().add(user);
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public Comment unlikeComment(long commentId, long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found!"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found!"));
+        comment.getLikes().remove(user);
+        return commentRepository.save(comment);
+    }
 }

@@ -9,6 +9,7 @@ import moqim.me.facelook.domain.entities.Post;
 import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
 import moqim.me.facelook.mappers.PostMapper;
+import moqim.me.facelook.mappers.CommentMapper;
 import moqim.me.facelook.services.PostService;
 import moqim.me.facelook.security.FBUserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class PostController {
     private final PostService postService;
     private final PostMapper postMapper;
+    private final CommentMapper commentMapper;
 
 
     @GetMapping(path = "/all")
@@ -125,15 +127,8 @@ public class PostController {
             @PathVariable long id
     ) {
         List<Comment> comments = postService.listComments(id);
-        List<CommentDto> dos = comments.stream().map(comment -> CommentDto.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .author(moqim.me.facelook.domain.dtos.AuthorDto.builder()
-                        .id(comment.getUser().getId())
-                        .build())
-                .build()).collect(Collectors.toList());
-        return ResponseEntity.ok(dos);
+        List<CommentDto> dtos = comments.stream().map(commentMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @DeleteMapping(path = "/comments/{commentId}")
@@ -146,6 +141,30 @@ public class PostController {
         }
         postService.deleteComment(commentId, user.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(path = "/comments/{commentId}/like")
+    public ResponseEntity<CommentDto> likeComment(
+            @PathVariable long commentId,
+            @AuthenticationPrincipal FBUserDetails user
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        var comment = postService.likeComment(commentId, user.getId());
+        return ResponseEntity.ok(commentMapper.toDto(comment));
+    }
+
+    @PutMapping(path = "/comments/{commentId}/unlike")
+    public ResponseEntity<CommentDto> unlikeComment(
+            @PathVariable long commentId,
+            @AuthenticationPrincipal FBUserDetails user
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        var comment = postService.unlikeComment(commentId, user.getId());
+        return ResponseEntity.ok(commentMapper.toDto(comment));
     }
 
 }

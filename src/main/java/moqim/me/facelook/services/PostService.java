@@ -27,4 +27,7 @@ public interface PostService {
     Post addComment(long postId, long userId, String content);
     List<Comment> listComments(long postId);
     void deleteComment(long commentId, long userId);
+
+    Comment likeComment(long commentId, long userId);
+    Comment unlikeComment(long commentId, long userId);
 }

@@ -12,5 +12,6 @@ import org.mapstruct.ReportingPolicy;
 public interface CommentMapper {
 
     @Mapping(target = "author", source = "user")
+    @Mapping(target = "likesCount", expression = "java(comment.getLikes() == null ? 0 : comment.getLikes().size())")
     CommentDto toDto(Comment comment);
 }

@@ -16,4 +16,5 @@ public class CommentDto {
     private String content;
     private AuthorDto author;
     private LocalDateTime createdAt;
+    private int likesCount;
 }
