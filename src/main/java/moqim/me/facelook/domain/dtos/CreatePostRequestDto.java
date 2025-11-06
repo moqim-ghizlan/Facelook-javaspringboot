@@ -2,6 +2,7 @@ package moqim.me.facelook.domain.dtos;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,5 +17,7 @@ public class CreatePostRequestDto {
     @NotBlank(message = "Post must have a title")
     @Size(min=2, max = 50, message = "Post's title size must be between {min} and {max}")
     private String title;
+    @NotNull(message = "Post must have a topicId")
+    private Long topicId;
 
 }

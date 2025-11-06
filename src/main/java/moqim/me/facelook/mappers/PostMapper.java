@@ -18,6 +18,8 @@ import org.mapstruct.ReportingPolicy;
 public interface PostMapper {
 
     @Mapping(target = "author", source = "author")
+    @Mapping(target = "likesCount", expression = "java(post.getEmotions() == null ? 0 : (int) post.getEmotions().stream().filter(e -> e.getStatus() == moqim.me.facelook.domain.enums.EmotionStatus.LIKE).count())")
+    @Mapping(target = "dislikesCount", expression = "java(post.getEmotions() == null ? 0 : (int) post.getEmotions().stream().filter(e -> e.getStatus() == moqim.me.facelook.domain.enums.EmotionStatus.DISLIKE).count())")
     PostDto toDto(Post post);
     
     AuthorDto toAuthorDto(User user);

@@ -17,4 +17,9 @@ public interface PostService {
     List<Post> listPostsByTopicId(long topicId);
     List<Post> listPostsByCreatorId(long creatorId);
     Post postByTopicId(long topicId);
+
+    Post likePost(long postId, long userId);
+    Post dislikePost(long postId, long userId);
+    Post unlikePost(long postId, long userId);
+    Post undislikePost(long postId, long userId);
 }

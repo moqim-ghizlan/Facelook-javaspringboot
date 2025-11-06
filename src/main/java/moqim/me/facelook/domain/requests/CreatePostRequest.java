@@ -15,4 +15,5 @@ public class CreatePostRequest {
     private String title;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long topicId;
 }

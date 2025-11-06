@@ -18,5 +18,7 @@ public class PostDto {
     private AuthorDto author;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private int likesCount;
+    private int dislikesCount;
 
 }

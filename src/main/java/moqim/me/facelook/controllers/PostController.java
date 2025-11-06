@@ -71,4 +71,40 @@ public class PostController {
         return ResponseEntity.ok("Post deleted");
     }
 
+    @PutMapping(path = "/one/{id}/like")
+    public ResponseEntity<PostDto> likePost(@PathVariable long id, @AuthenticationPrincipal FBUserDetails user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Post post = postService.likePost(id, user.getId());
+        return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
+    @PutMapping(path = "/one/{id}/dislike")
+    public ResponseEntity<PostDto> dislikePost(@PathVariable long id, @AuthenticationPrincipal FBUserDetails user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Post post = postService.dislikePost(id, user.getId());
+        return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
+    @PutMapping(path = "/one/{id}/unlike")
+    public ResponseEntity<PostDto> unlikePost(@PathVariable long id, @AuthenticationPrincipal FBUserDetails user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Post post = postService.unlikePost(id, user.getId());
+        return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
+    @PutMapping(path = "/one/{id}/undislike")
+    public ResponseEntity<PostDto> undislikePost(@PathVariable long id, @AuthenticationPrincipal FBUserDetails user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Post post = postService.undislikePost(id, user.getId());
+        return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
 }
