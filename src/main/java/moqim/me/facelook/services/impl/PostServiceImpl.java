@@ -8,6 +8,7 @@ import moqim.me.facelook.domain.enums.EmotionStatus;
 import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
 import moqim.me.facelook.repository.EmotionRepository;
+import moqim.me.facelook.repository.CommentRepository;
 import moqim.me.facelook.repository.PostRepository;
 import moqim.me.facelook.repository.TopicRepository;
 import moqim.me.facelook.repository.UserRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import moqim.me.facelook.domain.entities.Emotion;
+import moqim.me.facelook.domain.entities.Comment;
 
 
 @Service
@@ -27,6 +29,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
     private final EmotionRepository emotionRepository;
+    private final CommentRepository commentRepository;
 
 
     @Override
@@ -153,4 +156,36 @@ public class PostServiceImpl implements PostService {
         return post;
     }
 
+    @Override
+    public Post addComment(long postId, long userId, String content) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found!"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found!"));
+
+        Comment comment = Comment.builder()
+                .post(post)
+                .user(user)
+                .content(content)
+                .build();
+        commentRepository.save(comment);
+        return post;
+    }
+
+    @Override
+    public List<Comment> listComments(long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found!"));
+        return commentRepository.findByPost(post);
+    }
+
+    @Override
+    public void deleteComment(long commentId, long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found!"));
+        if (comment.getUser() == null || comment.getUser().getId() != userId) {
+            throw new IllegalArgumentException("You are not allowed to delete this comment");
+        }
+        commentRepository.delete(comment);
+    }
 }

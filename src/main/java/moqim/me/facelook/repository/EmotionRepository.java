@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     Optional<Emotion> findByPostAndUser(Post post, User user);
 
-    // Optional helpers you may want:
     long countByPostAndStatus(Post post, EmotionStatus status);
     void deleteByPostAndUser(Post post, User user);
 }

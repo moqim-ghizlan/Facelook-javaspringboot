@@ -33,9 +33,8 @@ public class AuthentificationServiceImpl implements AuthentificationService {
     private final PasswordEncoder passwordEncoder;
 
 
-    //@Value("${jwt.secret}")
-
-    private String secretKey = "your-super-secret-key-123456789012345678901234567890";
+    @Value("${jwt.secret.key:xhkTdTfcS-LrtHAMr_QQhRP-HLhGGV}")
+    private String secretKey;
 
 
     @Override

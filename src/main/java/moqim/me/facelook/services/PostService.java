@@ -1,6 +1,7 @@
 package moqim.me.facelook.services;
 
 import moqim.me.facelook.domain.entities.Post;
+import moqim.me.facelook.domain.entities.Comment;
 import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
 
@@ -22,4 +23,8 @@ public interface PostService {
     Post dislikePost(long postId, long userId);
     Post unlikePost(long postId, long userId);
     Post undislikePost(long postId, long userId);
+
+    Post addComment(long postId, long userId, String content);
+    List<Comment> listComments(long postId);
+    void deleteComment(long commentId, long userId);
 }

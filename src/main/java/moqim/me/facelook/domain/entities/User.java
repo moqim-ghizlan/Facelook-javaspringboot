@@ -45,7 +45,6 @@ public class User {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Topic> topics = new ArrayList<>();
 
-    // Users that this user follows (owning side)
     @ManyToMany
     @JoinTable(
             name = "user_follows",
@@ -54,7 +53,6 @@ public class User {
     )
     private Set<User> following = new HashSet<>();
 
-    // Users that follow this user (inverse side)
     @ManyToMany(mappedBy = "following")
     private Set<User> followers = new HashSet<>();
 

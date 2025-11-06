@@ -3,9 +3,8 @@ package moqim.me.facelook.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import moqim.me.facelook.domain.dtos.CreatePostRequestDto;
-import moqim.me.facelook.domain.dtos.PostDto;
-import moqim.me.facelook.domain.dtos.UpdatePostRequestDto;
+import moqim.me.facelook.domain.dtos.*;
+import moqim.me.facelook.domain.entities.Comment;
 import moqim.me.facelook.domain.entities.Post;
 import moqim.me.facelook.domain.requests.CreatePostRequest;
 import moqim.me.facelook.domain.requests.UpdatePostRequest;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/posts")
@@ -105,6 +105,47 @@ public class PostController {
         }
         Post post = postService.undislikePost(id, user.getId());
         return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
+    @PostMapping(path = "/one/{id}/comments")
+    public ResponseEntity<PostDto> addComment(
+            @PathVariable long id,
+            @Valid @RequestBody CreateCommentRequestDto createCommentRequestDto,
+            @AuthenticationPrincipal FBUserDetails user
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Post post = postService.addComment(id, user.getId(), createCommentRequestDto.getContent());
+        return ResponseEntity.ok(postMapper.toDto(post));
+    }
+
+    @GetMapping(path = "/one/{id}/comments")
+    public ResponseEntity<List<moqim.me.facelook.domain.dtos.CommentDto>> listComments(
+            @PathVariable long id
+    ) {
+        List<Comment> comments = postService.listComments(id);
+        List<CommentDto> dos = comments.stream().map(comment -> CommentDto.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .author(moqim.me.facelook.domain.dtos.AuthorDto.builder()
+                        .id(comment.getUser().getId())
+                        .build())
+                .build()).collect(Collectors.toList());
+        return ResponseEntity.ok(dos);
+    }
+
+    @DeleteMapping(path = "/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable long commentId,
+            @AuthenticationPrincipal FBUserDetails user
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        postService.deleteComment(commentId, user.getId());
+        return ResponseEntity.noContent().build();
     }
 
 }
